@@ -19,36 +19,37 @@ source:
   keys:
     - url
   # Fields runs jobs to process the URL DOM.
-  fields:
-    -
-      # Finds the title by plucking the .page-subtitle field.
-      name: title
-      label: 'Title'
-      obtainer: ObtainTitle
-      # Run Obtainer before modifiers are run.
-      after_modify: FALSE
-      jobs:
-        # Any number of jobs can be configured using find, or pluck to remove it from the DOM.
-        - { job: 'addSearch', method: 'pluckSelector', arguments: [ '.page-subtitle', 1 ] }
-    -
-      # Finds the body by plucking the .field-name-body field.
-      name: body
-      label: 'Body'
-      obtainer: ObtainBody
-      # Run Obtainer after modifiers are run.
-      after_modify: TRUE
-      jobs:
-        - { job: 'addSearch', method: 'pluckSelector', arguments: [ '.field-name-body', 1 ] }
+  migration_tools:
+    fields:
+      -
+        # Finds the title by plucking the .page-subtitle field.
+        name: title
+        label: 'Title'
+        obtainer: ObtainTitle
+        # Run Obtainer before modifiers are run.
+        after_modify: FALSE
+        jobs:
+          # Any number of jobs can be configured using find, or pluck to remove it from the DOM.
+          - { job: 'addSearch', method: 'pluckSelector', arguments: [ '.page-subtitle', 1 ] }
+      -
+        # Finds the body by plucking the .field-name-body field.
+        name: body
+        label: 'Body'
+        obtainer: ObtainBody
+        # Run Obtainer after modifiers are run.
+        after_modify: TRUE
+        jobs:
+          - { job: 'addSearch', method: 'pluckSelector', arguments: [ '.field-name-body', 1 ] }
 
-  # Modifiers allow for addPreModifier or addModifier.
-  # Methods are in ModifyHtml class
-  modifiers:
-    - { modifier: addPreModifier, method: convertBaseHrefLinks }
-    - { modifier: addPreModifier, method: fixNamedAnchors }
-    - { modifier: addPreModifier, method: removeFaultyImgLongdesc }
-    - { modifier: addModifier, method: removeSelectorAll, arguments: [ '.topnavlinks' ] }
-    - { modifier: addModifier, method: removeEmptyTables }
-    - { modifier: addModifier, method: removeElements, arguments: [ '.pagedate', 'head' ] }
+    # Modifiers allow for addPreModifier or addModifier.
+    # Methods are in ModifyHtml class
+    modifiers:
+      - { modifier: addPreModifier, method: convertBaseHrefLinks }
+      - { modifier: addPreModifier, method: fixNamedAnchors }
+      - { modifier: addPreModifier, method: removeFaultyImgLongdesc }
+      - { modifier: addModifier, method: removeSelectorAll, arguments: [ '.topnavlinks' ] }
+      - { modifier: addModifier, method: removeEmptyTables }
+      - { modifier: addModifier, method: removeElements, arguments: [ '.pagedate', 'head' ] }
 
 process:
   id: url

@@ -42,12 +42,12 @@ class PrepareRow implements EventSubscriberInterface {
   public function onMigratePrepareRow(MigratePrepareRowEvent $event) {
     $row = $event->getRow();
 
-    $field_containing_url = $row->getSourceProperty('field_containing_url');
-    $field_containing_html = $row->getSourceProperty('field_containing_html');
+    $migration_tools_settings = $row->getSourceProperty('migration_tools');
 
     // If field_containing_url is set, then we know it should do job processing.
-    // @todo Needs better logic to determine when to run the parsing.
-    if (!empty($field_containing_url)) {
+    if (!empty($migration_tools_settings)) {
+      $field_containing_url = $migration_tools_settings['field_containing_url'];
+      $field_containing_html = $migration_tools_settings['field_containing_html'];
       if ($row->getIdMap() && !$row->needsUpdate()) {
         // Row is already imported, don't run any more logic.
         return;
@@ -82,7 +82,7 @@ class PrepareRow implements EventSubscriberInterface {
       $source_parser = new Node($path, '', $row);
 
       // Add Modifiers.
-      $config_modifiers = $row->getSourceProperty('modifiers');
+      $config_modifiers = $migration_tools_settings['modifiers'];
       if ($config_modifiers) {
         $source_parser_modifier = $source_parser->getModifier();
         foreach ($config_modifiers as $config_modifier) {
@@ -93,7 +93,7 @@ class PrepareRow implements EventSubscriberInterface {
       }
 
       // Construct Jobs.
-      $config_fields = $row->getSourceProperty('fields');
+      $config_fields = $migration_tools_settings['fields'];
       if ($config_fields) {
         foreach ($config_fields as $config_field) {
           $config_jobs = $config_field['jobs'];
